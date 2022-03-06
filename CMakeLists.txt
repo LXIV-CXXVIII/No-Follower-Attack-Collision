@@ -125,6 +125,8 @@ set(headers
 
 set(sources
 	src/main.cpp
+	src/NFAC/NFAC.cpp
+	src/NFAC/NFAC.h
 	src/PCH.cpp
 )
 
