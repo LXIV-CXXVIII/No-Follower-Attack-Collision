@@ -70,6 +70,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface * a_
 
     Loki::NoFollowerAttackCollision::InstallMeleeHook();
     Loki::NoFollowerAttackCollision::InstallSweepHook();
+    Loki::NoFollowerAttackCollision::InstallArrowHook();
 
     return true;
 }

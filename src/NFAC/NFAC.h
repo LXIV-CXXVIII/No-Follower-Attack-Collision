@@ -10,6 +10,7 @@ namespace Loki {
         static NoFollowerAttackCollision* GetSingleton();
         static void InstallMeleeHook();
         static void InstallSweepHook();
+        static void InstallArrowHook();
 
     private:
         // RCX = Aggressor, RDX = Victim, R8 = ???, R9 = ???, XMM0 = ???
