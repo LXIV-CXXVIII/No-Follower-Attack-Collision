@@ -45,5 +45,11 @@ void Loki::NoFollowerAttackCollision::CharacterUnk_628C20(RE::Character* a_char,
 
     if ((a_char->IsPlayerRef() || a_char->IsPlayerTeammate()) && a_actor->IsPlayerTeammate()) { return; }
 
+    if ((a_char->IsPlayerRef() || a_char->IsPlayerTeammate()) && 
+        a_actor->IsPlayerTeammate() || (a_actor->IsGuard() && !a_actor->IsHostileToActor(a_char))) {
+    
+        return;
+    }
+
     return _CharacterUnk_628C20(a_char, a_actor, a3, a4, a5);
 }
