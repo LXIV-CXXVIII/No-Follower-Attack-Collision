@@ -48,16 +48,30 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface * 
 
 static void SKSEMessageHandler(SKSE::MessagingInterface::Message* message) {
 
+    auto ptr = Loki::NoFollowerAttackCollision::GetSingleton();
+
     switch (message->type) {
-    case SKSE::MessagingInterface::kNewGame:
-    case SKSE::MessagingInterface::kPostLoadGame: {
-        break;
-    }
-    case SKSE::MessagingInterface::kPostLoad: {
-        break;
-    }
-    default:
-        break;
+        case SKSE::MessagingInterface::kDataLoaded: {
+            ptr->InstallInputSink();
+            break;
+        }
+        case SKSE::MessagingInterface::kNewGame: {
+            break;
+        }
+        case SKSE::MessagingInterface::kPostLoadGame: {
+            break;
+        }
+        case SKSE::MessagingInterface::kPostLoad: {
+            ptr->InstallMeleeHook();
+            ptr->InstallSweepHook();
+            ptr->InstallArrowHook();
+            break;
+        }
+        case SKSE::MessagingInterface::kPostPostLoad: {
+            break;
+        }
+        default:
+            break;
     }
 
 }
@@ -68,9 +82,10 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface * a_
     SKSE::Init(a_skse);
     SKSE::AllocTrampoline(64);
 
-    Loki::NoFollowerAttackCollision::InstallMeleeHook();
-    Loki::NoFollowerAttackCollision::InstallSweepHook();
-    Loki::NoFollowerAttackCollision::InstallArrowHook();
+    auto messaging = SKSE::GetMessagingInterface();
+    if (!messaging->RegisterListener("SKSE", SKSEMessageHandler)) { // add callbacks for TrueHUD
+        return false;
+    }
 
     return true;
 }
