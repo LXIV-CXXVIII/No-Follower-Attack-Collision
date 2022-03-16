@@ -43,8 +43,6 @@ void Loki::NoFollowerAttackCollision::InstallArrowHook() {
 void Loki::NoFollowerAttackCollision::CharacterUnk_628C20(RE::Character* a_char, RE::Actor* a_actor, std::int64_t a3, char a4, float a5) {
     if (!a_actor || !a_char) { return _CharacterUnk_628C20(a_char, a_actor, a3, a4, a5); }
 
-    if ((a_char->IsPlayerRef() || a_char->IsPlayerTeammate()) && a_actor->IsPlayerTeammate()) { return; }
-
     if ((a_char->IsPlayerRef() || a_char->IsPlayerTeammate()) && 
         a_actor->IsPlayerTeammate() || (a_actor->IsGuard() && !a_actor->IsHostileToActor(a_char))) {
     
