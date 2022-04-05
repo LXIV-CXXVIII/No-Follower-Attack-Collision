@@ -3,30 +3,30 @@
 static inline bool toggle = true;
 
 void Loki::NoFollowerAttackCollision::InstallMeleeHook() {
-    REL::Relocation<std::uintptr_t> MeleeHook{ REL::ID(37650) }; //+38B
+	REL::Relocation<std::uintptr_t> MeleeHook{ REL::ID(37650) }; //+38B
 
-    auto& trmp = SKSE::GetTrampoline();
-    _MeleeFunction = trmp.write_call<5>(MeleeHook.address() + 0x38B, MeleeFunction);
+	auto& trmp = SKSE::GetTrampoline();
+	_MeleeFunction = trmp.write_call<5>(MeleeHook.address() + 0x38B, MeleeFunction);
 
-    logger::info("Unk Hook injected");
+	logger::info("Unk Hook injected");
 }
 
 void Loki::NoFollowerAttackCollision::InstallSweepHook() {
-    REL::Relocation<std::uintptr_t> SweepHook{ REL::ID(37689) }; //+DD
+	REL::Relocation<std::uintptr_t> SweepHook{ REL::ID(37689) }; //+DD
 
-    auto& trmp = SKSE::GetTrampoline();
-    _SweepFunction = trmp.write_call<5>(SweepHook.address() + 0xDD, SweepFunction);
+	auto& trmp = SKSE::GetTrampoline();
+	_SweepFunction = trmp.write_call<5>(SweepHook.address() + 0xDD, SweepFunction);
 
-    logger::info("Unk Hook 2 injected");
+	logger::info("Unk Hook 2 injected");
 }
 
 void Loki::NoFollowerAttackCollision::InstallArrowHook() {
-    REL::Relocation<std::uintptr_t> arrowHook{ REL::ID(43027) }; //+90
+	REL::Relocation<std::uintptr_t> arrowHook{ REL::ID(43027) }; //+90
 
-    auto& trmp = SKSE::GetTrampoline();
+	auto& trmp = SKSE::GetTrampoline();
 	_ArrowFunction = trmp.write_call<5>(arrowHook.address() + 0x90, ArrowFunction);
 
-    logger::info("Arrow hook injected");
+	logger::info("Arrow hook injected");
 }
 
 void Loki::NoFollowerAttackCollision::InstallInputSink() {
@@ -34,51 +34,60 @@ void Loki::NoFollowerAttackCollision::InstallInputSink() {
 	deviceMan->AddEventSink(OnInput::GetSingleton());
 }
 
-void Loki::NoFollowerAttackCollision::MeleeFunction(RE::Character* a_char, RE::Actor* a_actor, std::int64_t a3, char a4, float a5) {
+void Loki::NoFollowerAttackCollision::MeleeFunction(RE::Character* a_aggressor, RE::Actor* a_victim, std::int64_t a3, char a4, float a5) {
 
-	if (!a_actor || !a_char || !toggle) { return _MeleeFunction(a_char, a_actor, a3, a4, a5); }
+	if (!a_victim || !a_aggressor || !toggle) { return _MeleeFunction(a_aggressor, a_victim, a3, a4, a5); }
 
-	if ((a_char->IsPlayerRef() || a_char->IsPlayerTeammate()) &&
-		a_actor->IsPlayerTeammate() || (a_actor->IsGuard() && !a_actor->IsHostileToActor(a_char))) {
+	if ((a_aggressor->IsPlayerRef() || a_aggressor->IsPlayerTeammate()) &&
+		a_victim->IsPlayerTeammate() || (a_victim->IsGuard() && !a_victim->IsHostileToActor(a_aggressor))) {
 
 		return;
 	}
+	if (a_victim->IsAMount() && !a_victim->IsHostileToActor(a_aggressor)) {
+		return;
+	}
 
-	if (protectNeutralActor) { if (!a_actor->IsHostileToActor(a_char)) { return; } }
+	if (protectNeutralActor) { if (!a_victim->IsHostileToActor(a_aggressor)) { return; } }
 
-	return _MeleeFunction(a_char, a_actor, a3, a4, a5);
+	return _MeleeFunction(a_aggressor, a_victim, a3, a4, a5);
 
 }
 
-void Loki::NoFollowerAttackCollision::SweepFunction(RE::Character* a_char, RE::Actor* a_actor, std::int64_t a3, char a4, float a5) {
+void Loki::NoFollowerAttackCollision::SweepFunction(RE::Character* a_aggressor, RE::Actor* a_victim, std::int64_t a3, char a4, float a5) {
 
-	if (!a_actor || !a_char || !toggle) { return _SweepFunction(a_char, a_actor, a3, a4, a5); }
+	if (!a_victim || !a_aggressor || !toggle) { return _SweepFunction(a_aggressor, a_victim, a3, a4, a5); }
 
-	if ((a_char->IsPlayerRef() || a_char->IsPlayerTeammate()) &&
-		a_actor->IsPlayerTeammate() || (a_actor->IsGuard() && !a_actor->IsHostileToActor(a_char))) {
+	if ((a_aggressor->IsPlayerRef() || a_aggressor->IsPlayerTeammate()) &&
+		a_victim->IsPlayerTeammate() || (a_victim->IsGuard() && !a_victim->IsHostileToActor(a_aggressor))) {
 
 		return;
 	}
+	if (a_victim->IsAMount() && !a_victim->IsHostileToActor(a_aggressor)) {
+		return;
+	}
 
-	if (protectNeutralActor) { if (!a_actor->IsHostileToActor(a_char)) { return; } }
+	if (protectNeutralActor) { if (!a_victim->IsHostileToActor(a_aggressor)) { return; } }
 
-	return _SweepFunction(a_char, a_actor, a3, a4, a5);
+	return _SweepFunction(a_aggressor, a_victim, a3, a4, a5);
 
 }
 
-void Loki::NoFollowerAttackCollision::ArrowFunction(RE::Character* a_char, RE::Actor* a_actor, std::int64_t a3, char a4, float a5) {
+void Loki::NoFollowerAttackCollision::ArrowFunction(RE::Character* a_aggressor, RE::Actor* a_victim, std::int64_t a3, char a4, float a5) {
 
-	if (!a_actor || !a_char || !toggle) { return _ArrowFunction(a_char, a_actor, a3, a4, a5); }
+	if (!a_victim || !a_aggressor || !toggle) { return _ArrowFunction(a_aggressor, a_victim, a3, a4, a5); }
 
-	if ((a_char->IsPlayerRef() || a_char->IsPlayerTeammate()) &&
-		a_actor->IsPlayerTeammate() || (a_actor->IsGuard() && !a_actor->IsHostileToActor(a_char))) {
+	if ((a_aggressor->IsPlayerRef() || a_aggressor->IsPlayerTeammate()) &&
+		a_victim->IsPlayerTeammate() || (a_victim->IsGuard() && !a_victim->IsHostileToActor(a_aggressor))) {
 
 		return;
 	}
+	if (a_victim->IsAMount() && !a_victim->IsHostileToActor(a_aggressor)) {
+		return;
+	}
 
-	if (protectNeutralActor) { if (!a_actor->IsHostileToActor(a_char)) { return; } }
+	if (protectNeutralActor) { if (!a_victim->IsHostileToActor(a_aggressor)) { return; } }
 
-	return _ArrowFunction(a_char, a_actor, a3, a4, a5);
+	return _ArrowFunction(a_aggressor, a_victim, a3, a4, a5);
 
 }
 
@@ -131,8 +140,7 @@ RE::BSEventNotifyControl Loki::OnInput::ProcessEvent(RE::InputEvent* const* a_ev
 				if (!toggle) {
 					toggle = true;
 					RE::DebugNotification("NFAC: On");
-				}
-				else {
+				} else {
 					toggle = false;
 					RE::DebugNotification("NFAC: Off");
 				}

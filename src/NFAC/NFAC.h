@@ -112,6 +112,7 @@ namespace Loki {
 			static NoFollowerAttackCollision* singleton = new NoFollowerAttackCollision();
 			return singleton;
 		}
+
         static void InstallMeleeHook();
         static void InstallSweepHook();
         static void InstallArrowHook();
@@ -123,9 +124,9 @@ namespace Loki {
 
     private:
         // RCX = Aggressor, RDX = Victim, R8 = ???, R9 = ???, XMM0 = ???
-		static void MeleeFunction(RE::Character* a_char, RE::Actor* a_actor, std::int64_t a3, char a4, float a5);
-		static void SweepFunction(RE::Character* a_char, RE::Actor* a_actor, std::int64_t a3, char a4, float a5);
-		static void ArrowFunction(RE::Character* a_char, RE::Actor* a_actor, std::int64_t a3, char a4, float a5);
+		static void MeleeFunction(RE::Character* a_victim, RE::Actor* a_aggressor, std::int64_t a3, char a4, float a5);
+		static void SweepFunction(RE::Character* a_victim, RE::Actor* a_aggressor, std::int64_t a3, char a4, float a5);
+		static void ArrowFunction(RE::Character* a_victim, RE::Actor* a_aggressor, std::int64_t a3, char a4, float a5);
 
 		static inline REL::Relocation<decltype(MeleeFunction)> _MeleeFunction;
 		static inline REL::Relocation<decltype(SweepFunction)> _SweepFunction;
